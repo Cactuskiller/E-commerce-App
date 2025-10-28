@@ -86,7 +86,7 @@ export default function ShoppingCart() {
     <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
       {/* Payment Success Popup */}
       {showPaymentSuccess && (
-        <div className="fixed inset-0 bg-black bg-opacity-5 flex items-center justify-center z-50">
+        <div className="fixed inset-0 bg-gray bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50">
           <div className="bg-white rounded-lg p-6 shadow-lg max-w-xs w-full text-center flex flex-col items-center">
             <Tickmark />
             <h2 className="text-lg font-semibold mt-4 mb-2 text-[#222]">

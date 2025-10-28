@@ -17,11 +17,19 @@ export default function Checkout() {
     country: "",
   });
   const [showAddressModal, setShowAddressModal] = useState(false);
-  const [voucherError, setVoucherError] = useState(""); // Add this state
-  const [addressError, setAddressError] = useState(""); // Add this state
+  const [voucherError, setVoucherError] = useState(""); 
+  const [addressError, setAddressError] = useState(""); 
+  const [deleteProductId, setDeleteProductId] = useState(null); // Track product to delete
+
+  // 🗑️ Delete a product from the cart
+  const handleDeleteProduct = (productId) => {
+    const updatedItems = items.filter((it) => it.id !== productId);
+    setItems(updatedItems);
+    localStorage.setItem("cart", JSON.stringify(updatedItems));
+  };
 
   const applyVoucher = async () => {
-    setVoucherError(""); // Reset error
+    setVoucherError(""); 
     if (!voucherCode) return;
     try {
       const res = await fetch(`${URL}/vouchers/code/${voucherCode}`);
@@ -32,7 +40,6 @@ export default function Checkout() {
       }
       const data = await res.json();
 
-      // Check min_value before applying
       const cartTotal = items.reduce(
         (sum, it) => sum + (it.price || 0) * (it.qty || 1),
         0
@@ -45,11 +52,9 @@ export default function Checkout() {
         return;
       }
 
-      // Only check is_first if true
       if (data.is_first) {
         const token = localStorage.getItem("token");
         const user = JSON.parse(localStorage.getItem("user") || "{}");
-        // Fetch user's orders to check if this is the first order
         const ordersRes = await fetch(`${URL}/orders?user_id=${user.id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
@@ -76,7 +81,6 @@ export default function Checkout() {
       const storeCart = JSON.parse(localStorage.getItem("cart")) || [];
       const filteredCart = storeCart.filter((item) => item.qty > 0);
 
-      // Fetch product details for each cart item
       const detailedItems = await Promise.all(
         filteredCart.map(async (item) => {
           try {
@@ -134,7 +138,6 @@ export default function Checkout() {
       setShowAuthModal(true);
       return;
     }
-    // Check if address fields are filled
     if (
       !address.address.trim() ||
       !address.city.trim() ||
@@ -143,7 +146,7 @@ export default function Checkout() {
       setAddressError("Please fill in all address fields before proceeding.");
       return;
     }
-    setAddressError(""); // Clear error if all fields are filled
+    setAddressError(""); 
     navigate("/shopping-cart", {
       state: {
         address,
@@ -151,7 +154,7 @@ export default function Checkout() {
         voucher,
         summary,
       },
-    }); // Navigate to shopping cart if logged in
+    });
   };
 
   return (
@@ -228,7 +231,6 @@ export default function Checkout() {
               </button>
             </div>
 
-            {/* Divider between address and details form */}
             {showAddressModal && (
               <>
                 <hr className="my-3 border-gray-200" />
@@ -274,14 +276,16 @@ export default function Checkout() {
             )}
           </div>
         </div>
-        {/* Items */}
+
+        {/* 🛒 Items List */}
         <div className="space-y-3">
           {items.length > 0 ? (
             items.map((it) => (
               <div
                 key={`${it.id}-${it.size}-${it.color}`}
+                className="relative rounded-lg p-2 shadow-sm bg-white cursor-pointer"
+                style={{ boxShadow: "0 2px 8px rgba(248, 55, 88, 0.12)" }}
                 onClick={() => navigate(`/product/${it.id}`)}
-                className="cursor-pointer"
               >
                 <OrderCard
                   image={
@@ -296,6 +300,32 @@ export default function Checkout() {
                   size={it.size}
                   qty={it.qty}
                 />
+
+                {/* 🗑️ Delete button */}
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation(); // Prevent card click event
+                    setDeleteProductId(it.id);
+                  }}
+                  className="absolute top-2 right-2 text-white bg-[#F83758] hover:bg-[#d32f2f] transition rounded-full shadow-lg p-2"
+                  title="Remove product"
+                  style={{ zIndex: 2, border: "none" }}
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="2.5"
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M6 18L18 6M6 6l12 12"
+                    />
+                  </svg>
+                </button>
               </div>
             ))
           ) : (
@@ -320,6 +350,7 @@ export default function Checkout() {
               })}
             </span>
           </div>
+
           {/* Voucher Section */}
           <div className="flex flex-col gap-2 mt-3 pt-3">
             <div className="flex justify-between items-center">
@@ -452,6 +483,40 @@ export default function Checkout() {
             >
               Go to Login
             </Button>
+          </div>
+        </div>
+      )}
+
+      {/* Delete Product Confirmation Modal */}
+      {deleteProductId !== null && (
+        <div
+          className="fixed inset-0 bg-gray tr bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50"
+          onClick={() => setDeleteProductId(null)}
+        >
+          <div
+            className="bg-white rounded-lg p-4 shadow-lg min-w-[220px] text-center"
+            onClick={e => e.stopPropagation()}
+          >
+            <div className="mb-3 text-base font-semibold text-[#F83758]">
+              Remove product from cart?
+            </div>
+            <div className="flex justify-center gap-3">
+              <button
+                className="px-4 py-1 rounded bg-gray-200 text-gray-700"
+                onClick={() => setDeleteProductId(null)}
+              >
+                Cancel
+              </button>
+              <button
+                className="px-4 py-1 rounded bg-[#F83758] text-white"
+                onClick={() => {
+                  handleDeleteProduct(deleteProductId);
+                  setDeleteProductId(null);
+                }}
+              >
+                Remove
+              </button>
+            </div>
           </div>
         </div>
       )}

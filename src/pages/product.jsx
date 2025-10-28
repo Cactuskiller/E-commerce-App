@@ -26,27 +26,49 @@ const SizePill = ({ label, active, onClick }) => (
   </button>
 );
 
-const QtyStepper = ({ qty, updateCartQty }) => (
-  <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
-    <button
-      onClick={() => updateCartQty(qty > 0 ? qty - 1 : 0)}
-      className="w-10 h-10 grid place-items-center text-2xl text-gray-700"
-      style={{ border: "none", background: "none" }}
-    >
-      –
-    </button>
-    <div className="w-10 h-10 grid place-items-center text-gray-900 text-base font-medium bg-white">
-      {qty}
+const QtyStepper = ({ qty, updateCartQty, stock }) => {
+  const isOutOfStock = stock <= 0;
+  const canIncrement = !isOutOfStock && qty < stock;
+
+  return (
+    <div className="flex flex-col items-center">
+      <div className="flex items-center border border-gray-300 rounded-lg overflow-hidden bg-white">
+        <button
+          onClick={() => !isOutOfStock && updateCartQty(Math.max(qty - 1, 0))}
+          disabled={isOutOfStock || qty <= 0}
+          className={`w-10 h-10 grid place-items-center text-2xl ${
+            isOutOfStock ? "text-gray-400" : "text-gray-700"
+          }`}
+          style={{ border: "none", background: "none" }}
+        >
+          –
+        </button>
+
+        <div className="w-10 h-10 grid place-items-center text-gray-900 text-base font-medium bg-white">
+          {isOutOfStock ? "0" : qty}
+        </div>
+
+        <button
+          onClick={() => canIncrement && updateCartQty(qty + 1)}
+          disabled={!canIncrement}
+          className={`w-10 h-10 grid place-items-center text-2xl ${
+            canIncrement ? "text-gray-700" : "text-gray-400"
+          }`}
+          style={{ border: "none", background: "none" }}
+        >
+          +
+        </button>
+      </div>
+
+      {isOutOfStock && (
+        <p className="text-red-500 text-sm mt-1">Out of stock</p>
+      )}
+      {!isOutOfStock && qty >= stock && (
+        <p className="text-orange-500 text-sm mt-1">Max available: {stock}</p>
+      )}
     </div>
-    <button
-      onClick={() => updateCartQty(qty + 1)}
-      className="w-10 h-10 grid place-items-center text-2xl text-gray-700"
-      style={{ border: "none", background: "none" }}
-    >
-      +
-    </button>
-  </div>
-);
+  );
+};
 
 export default function ProductPage() {
   const navigate = useNavigate();
@@ -80,6 +102,17 @@ export default function ProductPage() {
   }, [id, activeSize, activeColor]);
 
   const updateCartQty = (newQty) => {
+    // ✅ Prevent adding or increasing out-of-stock items
+    if (product?.stock <= 0) {
+      alert("❌ This product is out of stock and cannot be added to the cart.");
+      return;
+    }
+    if (newQty > product.stock) {
+      alert(`⚠️ Only ${product.stock} left in stock.`);
+      return;
+    }
+
+    // ✅ Normal cart handling
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     setQty(newQty);
 
@@ -87,12 +120,11 @@ export default function ProductPage() {
 
     if (existingItemIndex >= 0) {
       if (newQty === 0) {
-        cart.splice(existingItemIndex, 1); 
+        cart.splice(existingItemIndex, 1);
       } else {
         cart[existingItemIndex].qty = newQty; // update qty
       }
     } else if (newQty > 0 && product) {
-      // add new item
       cart.push({
         id: product.id,
         title: product.title,
@@ -112,9 +144,7 @@ export default function ProductPage() {
     const fetchProduct = async () => {
       try {
         // Use the new endpoint!
-        const res = await fetch(
-          `${URL}/products/${id}/with-primary-image`
-        );
+        const res = await fetch(`${URL}/products/${id}/with-primary-image`);
         if (!res.ok) throw new Error("Failed to fetch product");
         const data = await res.json();
 
@@ -129,11 +159,17 @@ export default function ProductPage() {
             optionsArr = JSON.parse(data.options);
           }
           // Parse sizes and colors from options
-          optionsArr.forEach(opt => {
-            if (opt.name.toLowerCase().includes("size") && Array.isArray(opt.values)) {
+          optionsArr.forEach((opt) => {
+            if (
+              opt.name.toLowerCase().includes("size") &&
+              Array.isArray(opt.values)
+            ) {
               sizes = sizes.concat(opt.values);
             }
-            if (opt.name.toLowerCase().includes("color") && Array.isArray(opt.values)) {
+            if (
+              opt.name.toLowerCase().includes("color") &&
+              Array.isArray(opt.values)
+            ) {
               colors = colors.concat(opt.values);
             }
           });
@@ -146,7 +182,7 @@ export default function ProductPage() {
 
         // Build images array from response
         const images = Array.isArray(data.images)
-          ? data.images.map(img => img.link)
+          ? data.images.map((img) => img.link)
           : [];
 
         if (data.primary_image && !images.includes(data.primary_image)) {
@@ -161,6 +197,7 @@ export default function ProductPage() {
           ratingCount: data.rating_count || 0,
           price: data.endprice || data.price,
           oldPrice: data.price,
+          stock: data.stock || 0, // ✅ Add this line
           discount:
             data.price && data.endprice
               ? `${Math.round(
@@ -270,7 +307,10 @@ export default function ProductPage() {
 
       <div className="w-[95%] mx-auto mt-4">
         {/* Product image */}
-        <div className="w-full rounded-2xl overflow-x-auto bg-gray-100 aspect-[4/3] flex gap-3 scrollbar-hide" style={{ scrollSnapType: "x mandatory" }}>
+        <div
+          className="w-full rounded-2xl overflow-x-auto bg-gray-100 aspect-[4/3] flex gap-3 scrollbar-hide"
+          style={{ scrollSnapType: "x mandatory" }}
+        >
           {product.images.map((img, i) => (
             <img
               key={i}
@@ -385,7 +425,11 @@ export default function ProductPage() {
             <p className="text-sm text-black-600 mb-2 font-semibold">
               Select Quantity
             </p>
-            <QtyStepper qty={qty} updateCartQty={updateCartQty} />
+            <QtyStepper
+              qty={qty}
+              updateCartQty={updateCartQty}
+              stock={product.stock}
+            />
           </div>
           <Button
             onClick={handleCheckout}
