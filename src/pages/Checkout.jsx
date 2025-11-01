@@ -47,7 +47,7 @@ export default function Checkout() {
       if (data.min_value && cartTotal < data.min_value) {
         setVoucher(null);
         setVoucherError(
-          `Voucher requires a minimum cart value of ₹${data.min_value}.`
+          `Voucher requires a minimum cart value of $${data.min_value}.`
         );
         return;
       }
@@ -344,7 +344,7 @@ export default function Checkout() {
           <div className="flex items-center justify-between">
             <span className="text-[15px] text-[#111827]">Order Amount</span>
             <span className="text-[15px] font-semibold">
-              ₹{" "}
+              ${" "}
               {summary.orderAmount.toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
               })}
@@ -381,7 +381,7 @@ export default function Checkout() {
                 Voucher "{voucher.code}" applied!{" "}
                 {voucher.type === "per"
                   ? `Discount: ${voucher.value}%`
-                  : `Discount: ₹${voucher.value}`}
+                  : `Discount: $${voucher.value}`}
               </p>
             )}
 
@@ -410,7 +410,7 @@ export default function Checkout() {
           <div className="flex items-center justify-between">
             <span className="text-[15px] text-[#111827]">Order Total</span>
             <span className="text-[15px] font-semibold">
-              ₹{" "}
+              ${" "}
               {summary.total.toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
               })}
@@ -440,7 +440,7 @@ export default function Checkout() {
           <div className="w-full flex items-center gap-3">
             <div className="flex-1 px-2 py-2">
               <div className="text-base font-semibold text-[#000000]">
-                ₹{" "}
+                ${" "}
                 {summary.total.toLocaleString("en-IN", {
                   minimumFractionDigits: 2,
                 })}

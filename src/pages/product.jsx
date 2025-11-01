@@ -76,35 +76,31 @@ export default function ProductPage() {
 
   const [product, setProduct] = useState(null);
   const [similarProducts, setSimilarProducts] = useState([]);
-  const [activeIdx, setActiveIdx] = useState(0);
   const [activeSize, setActiveSize] = useState("");
   const [activeColor, setActiveColor] = useState("");
   const [qty, setQty] = useState(0);
   const [expanded, setExpanded] = useState(false);
+  const [userRating, setUserRating] = useState(0); // Rating fetched from backend
+  const [selectedRating, setSelectedRating] = useState(0); // Rating selected by user
+  const [submittingRating, setSubmittingRating] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState({});
 
   // Load qty from localStorage on mount
   useEffect(() => {
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
-
-    // match product + size + color
     const existing = cart.find(
       (item) =>
         item.id === Number(id) &&
         (item.size || "default") === (activeSize || "default") &&
         (item.color || "default") === (activeColor || "default")
     );
-
-    if (existing?.qty) {
-      setQty(existing.qty);
-    } else {
-      setQty(0); // default if not in cart
-    }
+    if (existing?.qty) setQty(existing.qty);
+    else setQty(0);
   }, [id, activeSize, activeColor]);
 
   const updateCartQty = (newQty) => {
-    // ✅ Prevent adding or increasing out-of-stock items
     if (product?.stock <= 0) {
-      alert("❌ This product is out of stock and cannot be added to the cart.");
+      alert("❌ This product is out of stock.");
       return;
     }
     if (newQty > product.stock) {
@@ -112,18 +108,13 @@ export default function ProductPage() {
       return;
     }
 
-    // ✅ Normal cart handling
     let cart = JSON.parse(localStorage.getItem("cart")) || [];
     setQty(newQty);
-
     const existingItemIndex = cart.findIndex((item) => item.id === Number(id));
 
     if (existingItemIndex >= 0) {
-      if (newQty === 0) {
-        cart.splice(existingItemIndex, 1);
-      } else {
-        cart[existingItemIndex].qty = newQty; // update qty
-      }
+      if (newQty === 0) cart.splice(existingItemIndex, 1);
+      else cart[existingItemIndex].qty = newQty;
     } else if (newQty > 0 && product) {
       cart.push({
         id: product.id,
@@ -136,58 +127,40 @@ export default function ProductPage() {
         price: product.price,
       });
     }
-
     localStorage.setItem("cart", JSON.stringify(cart));
   };
 
+  // Fetch product info
   useEffect(() => {
     const fetchProduct = async () => {
       try {
-        // Use the new endpoint!
         const res = await fetch(`${URL}/products/${id}/with-primary-image`);
         if (!res.ok) throw new Error("Failed to fetch product");
         const data = await res.json();
 
-        // Parse options
-        let sizes = [];
-        let colors = [];
+        // Parse options (sizes, colors)
+        let sizes = [],
+          colors = [];
+        let optionsArr = [];
         try {
-          let optionsArr = [];
-          if (Array.isArray(data.options)) {
-            optionsArr = data.options;
-          } else if (typeof data.options === "string") {
-            optionsArr = JSON.parse(data.options);
-          }
-          // Parse sizes and colors from options
-          optionsArr.forEach((opt) => {
-            if (
-              opt.name.toLowerCase().includes("size") &&
-              Array.isArray(opt.values)
-            ) {
-              sizes = sizes.concat(opt.values);
-            }
-            if (
-              opt.name.toLowerCase().includes("color") &&
-              Array.isArray(opt.values)
-            ) {
-              colors = colors.concat(opt.values);
-            }
-          });
-          // Remove duplicates
-          sizes = [...new Set(sizes)];
-          colors = [...new Set(colors)];
-        } catch (e) {
-          console.error("Options parse error:", e);
-        }
+          optionsArr = Array.isArray(data.options)
+            ? data.options
+            : JSON.parse(data.options || "[]");
+        } catch {}
+        optionsArr.forEach((opt) => {
+          if (opt.name.toLowerCase().includes("size"))
+            sizes.push(...opt.values);
+          if (opt.name.toLowerCase().includes("color"))
+            colors.push(...opt.values);
+        });
+        sizes = [...new Set(sizes)];
+        colors = [...new Set(colors)];
 
-        // Build images array from response
         const images = Array.isArray(data.images)
           ? data.images.map((img) => img.link)
           : [];
-
-        if (data.primary_image && !images.includes(data.primary_image)) {
+        if (data.primary_image && !images.includes(data.primary_image))
           images.unshift(data.primary_image);
-        }
 
         setProduct({
           id: data.id,
@@ -197,15 +170,16 @@ export default function ProductPage() {
           ratingCount: data.rating_count || 0,
           price: data.endprice || data.price,
           oldPrice: data.price,
-          stock: data.stock || 0, // ✅ Add this line
+          stock: data.stock || 0,
           discount:
             data.price && data.endprice
               ? `${Math.round(
                   ((data.price - data.endprice) / data.price) * 100
                 )}%`
               : "0%",
-          sizes: sizes.length ? sizes : [],
-          colors: colors.length ? colors : [],
+          sizes,
+          colors,
+          options: optionsArr,
           images,
           details: data.description || "—",
           category_id: data.category_id,
@@ -222,6 +196,7 @@ export default function ProductPage() {
     if (id) fetchProduct();
   }, [id]);
 
+  // Add this useEffect after product is set
   useEffect(() => {
     const fetchRelated = async () => {
       if (!product?.related) return;
@@ -249,17 +224,79 @@ export default function ProductPage() {
     fetchRelated();
   }, [product?.related, product?.id, id]);
 
-  if (!product) {
+  // Fetch user’s existing rating
+  useEffect(() => {
+    const fetchUserRating = async () => {
+      const user = JSON.parse(localStorage.getItem("user"));
+      if (!user?.id || !id) return;
+      try {
+        // use plural "ratings" to match backend router mount
+        const res = await fetch(`${URL}/ratings/user/${user.id}/product/${id}`);
+        if (res.ok) {
+          const data = await res.json();
+          if (data?.rating?.value) {
+            setUserRating(Number(data.rating.value));
+            setSelectedRating(Number(data.rating.value)); // Ensure both are numbers
+          } else {
+            setUserRating(0);
+            setSelectedRating(0);
+          }
+        }
+      } catch (err) {
+        console.error("Error fetching user rating:", err);
+      }
+    };
+    fetchUserRating();
+  }, [id]);
+
+  // Handle star click (select rating, don't send yet)
+  const handleStarClick = (value) => {
+    setSelectedRating(value);
+  };
+
+  // Send rating to backend
+  const sendRating = async () => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (!user?.id || !selectedRating) return;
+
+    setSubmittingRating(true);
+    try {
+      const res = await fetch(`${URL}/ratings`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          user_id: user.id,
+          product_id: product.id,
+          value: selectedRating,
+        }),
+      });
+      const data = await res.json();
+
+      if (data.success) {
+        setUserRating(Number(selectedRating));
+        setSelectedRating(Number(selectedRating)); // Ensure both are numbers
+        setProduct((prev) => ({
+          ...prev,
+          // rating: data.avg_rating,
+          // ratingCount: data.rating_count,
+        }));
+      }
+    } catch (err) {
+      console.error("Rating error:", err);
+    } finally {
+      setSubmittingRating(false);
+    }
+  };
+
+  if (!product)
     return (
       <div className="flex items-center justify-center h-screen">
         <p>Loading product...</p>
       </div>
     );
-  }
 
-  // Checkout handler
   const handleCheckout = () => {
-    if (qty === 0) return; // do nothing if no qty
+    if (qty === 0) return;
     navigate("/checkout");
   };
 
@@ -306,9 +343,9 @@ export default function ProductPage() {
       </div>
 
       <div className="w-[95%] mx-auto mt-4">
-        {/* Product image */}
+        {/* Product images */}
         <div
-          className="w-full rounded-2xl overflow-x-auto bg-gray-100 aspect-[4/3] flex gap-3 scrollbar-hide"
+          className="w-full rounded-2xl overflow-x-auto bg-gray-100 aspect-[4/5] flex gap-3 scrollbar-hide"
           style={{ scrollSnapType: "x mandatory" }}
         >
           {product.images.map((img, i) => (
@@ -322,85 +359,145 @@ export default function ProductPage() {
           ))}
         </div>
 
-        {/* Sizes */}
-        {product.sizes?.length > 0 && (
-          <div className="mt-3">
-            <p className="text-base font-semibold text-[#2D2343]">
-              Size: <span className="font-normal">{activeSize}</span>
-            </p>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {product.sizes.map((s) => (
-                <SizePill
-                  key={s}
-                  label={s}
-                  active={activeSize === s}
-                  onClick={() => setActiveSize(s)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Colors */}
-        {product.colors?.length > 0 && (
-          <div className="mt-3">
-            <p className="text-base font-semibold text-[#2D2343]">
-              Color: <span className="font-normal">{activeColor}</span>
-            </p>
-            <div className="flex flex-wrap gap-2 mt-2">
-              {product.colors.map((c, idx) => (
-                <button
-                  key={idx}
-                  onClick={() => setActiveColor(c)}
-                  className={`px-3 py-2 rounded-md border text-sm ${
-                    activeColor === c
-                      ? "bg-[#FE6B8B] text-white border-[#FE6B8B]"
-                      : "bg-gray-100 text-[#2D2343] border-[#FE6B8B]"
-                  }`}
-                >
-                  {c}
-                </button>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {/* Product details */}
-        <div className="mt-3">
+        <div className="mt-5">
           <h1 className="text-xl font-bold text-[#2D2343]">{product.title}</h1>
-          <p className="text-sm text-gray-600">{product.subtitle}</p>
-          <div className="flex items-center gap-2 mt-1">
+
+          {/* Product Options (Colors & Sizes) under the title
+          {(product.colors.length > 0 || product.sizes.length > 0) && (
+            <div className="mt-2 mb-2">
+              {product.colors.length > 0 && (
+                <div className="mb-1">
+                  <span className="font-semibold text-sm text-[#2D2343] mr-2">
+                    Colors:
+                  </span>
+                  {product.colors.map((color) => (
+                    <button
+                      key={color}
+                      onClick={() => setActiveColor(color)}
+                      className={`px-3 py-1 rounded-full border-2 mr-2 mb-1 text-sm transition ${
+                        activeColor === color
+                          ? "bg-[#FE6B8B] text-white border-[#FE6B8B]"
+                          : "bg-white text-[#FE6B8B] border-[#FE6B8B]"
+                      }`}
+                    >
+                      {color.trim()}
+                    </button>
+                  ))}
+                </div>
+              )}
+              {product.sizes.length > 0 && (
+                <div>
+                  <span className="font-semibold text-sm text-[#2D2343] mr-2">
+                    Sizes:
+                  </span>
+                  {product.sizes.map((size) => (
+                    <SizePill
+                      key={size}
+                      label={size}
+                      active={activeSize === size}
+                      onClick={() => setActiveSize(size)}
+                    />
+                  ))}
+                </div>
+              )}
+            </div>
+          )} */}
+
+          {/* Product Options (Additional) - new section */}
+          {product.options && product.options.length > 0 && (
+            <div className="mt-3 mb-3">
+              {product.options.map((opt) => (
+                <div key={opt.name} className="mb-1">
+                  <span className="font-semibold text-sm text-[#2D2343] mr-2">
+                    {opt.name}:
+                  </span>
+                  {opt.values.map((val) => (
+                    <button
+                      key={val}
+                      onClick={() =>
+                        setSelectedOptions((prev) => ({
+                          ...prev,
+                          [opt.name]: val,
+                        }))
+                      }
+                      className={`px-3 py-1 rounded-full border-2 mr-2 mb-1 text-sm transition ${
+                        selectedOptions[opt.name] === val
+                          ? "bg-[#FE6B8B] text-white border-[#FE6B8B]"
+                          : "bg-white text-[#FE6B8B] border-[#FE6B8B]"
+                      }`}
+                    >
+                      {val.trim()}
+                    </button>
+                  ))}
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Price Section */}
+          <div className="flex items-center gap-3 mt-1">
+            {/* Only show old price if there is a discount */}
+            {product.discount !== "0%" && (
+              <span className="text-lg text-gray-400 line-through">
+                ${product.oldPrice}
+              </span>
+            )}
+            <span className="text-xl font-semibold text-gray-600">
+              ${product.price}
+            </span>
+            {/* Only show discount if there is a discount */}
+            {product.discount !== "0%" && (
+              <span className="text-lg font-semibold text-[#FE735C]">
+                {product.discount} Off
+              </span>
+            )}
+          </div>
+
+          {/* ⭐ Rating Section - moved here under price */}
+          <div className="flex items-center gap-2 mt-2">
             {[1, 2, 3, 4, 5].map((star) => (
               <svg
                 key={star}
                 width="24"
                 height="24"
                 viewBox="0 0 24 24"
-                fill={product.rating >= star ? "#FFC107" : "#E0E0E0"}
+                fill={star <= selectedRating ? "#FFC107" : "#E0E0E0"}
                 strokeWidth="1"
-                className="inline"
+                className="inline cursor-pointer hover:scale-110 transition-transform"
+                onClick={() => handleStarClick(star)}
               >
                 <polygon points="12,2 15,9 22,9.3 17,14 18.5,21 12,17.5 5.5,21 7,14 2,9.3 9,9" />
               </svg>
             ))}
             <span className="ml-2 text-gray-600 text-sm">
-              {product.ratingCount}
+              ({product.ratingCount} reviews)
             </span>
           </div>
-          <div className="flex items-center gap-3 mt-1">
-            <span className="text-lg text-gray-400 line-through">
-              ₹{product.oldPrice}
-            </span>
-            <span className="text-xl font-semibold text-gray-600">
-              ₹{product.price}
-            </span>
-            <span className="text-lg font-semibold text-[#FE735C]">
-              {product.discount} Off
-            </span>
-          </div>
+          {/* Show Save button only if a rating is selected and it's different from the last saved */}
+          {selectedRating !== userRating && !submittingRating && (
+            <div className="mt-2">
+              <button
+                onClick={sendRating}
+                disabled={!selectedRating}
+                className={`px-4 py-2 rounded bg-[#F83758] text-white`}
+              >
+                Save
+              </button>
+            </div>
+          )}
+          {submittingRating && (
+            <div className="mt-2">
+              <button
+                disabled
+                className="px-4 py-2 rounded bg-gray-300 text-gray-500 cursor-not-allowed"
+              >
+                Saving...
+              </button>
+            </div>
+          )}
         </div>
 
-        {/* Product description */}
+        {/* Description */}
         <div className="mt-4">
           <h3 className="text-base font-semibold text-[#2D2343]">
             Product Details

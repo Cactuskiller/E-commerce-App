@@ -118,16 +118,16 @@ export default function ShoppingCart() {
         <div className="space-y-2">
           <div className="flex items-center justify-between text-gray-400">
             <span>Order</span>
-            <span>₹ {summary?.orderAmount?.toLocaleString('en-IN')}</span>
+            <span>$ {summary?.orderAmount?.toLocaleString('en-IN')}</span>
           </div>
           <div className="flex items-center justify-between text-gray-400">
             <span>Shipping</span>
-            <span>₹ {summary?.delivery?.toLocaleString('en-IN') || "0"}</span>
+            <span>$ {summary?.delivery?.toLocaleString('en-IN') || "0"}</span>
           </div>
           <div className="flex items-center justify-between text-[#111827] font-medium mt-2">
             <span>Total</span>
             <span className="text-base font-bold text-[#F83758]">
-              ₹ {summary?.total?.toLocaleString('en-IN')}
+              $ {summary?.total?.toLocaleString('en-IN')}
             </span>
           </div>
           <hr className="border-gray-200 mt-2" />
@@ -160,10 +160,10 @@ export default function ShoppingCart() {
                 <div className="flex-1">
                   <div className="font-semibold text-[#222]">{it.title}</div>
                   <div className="text-xs text-gray-500">Qty: {it.qty}</div>
-                  <div className="text-xs text-gray-500">Price: ₹{it.price}</div>
+                  <div className="text-xs text-gray-500">Price: ${it.price}</div>
                 </div>
                 <div className="font-bold text-[#F83758] text-base">
-                  ₹{(it.price * it.qty).toLocaleString('en-IN')}
+                  ${(it.price * it.qty).toLocaleString('en-IN')}
                 </div>
               </div>
             ))

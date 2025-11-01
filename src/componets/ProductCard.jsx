@@ -50,11 +50,11 @@ const ProductCard = ({
 
              <div className="mb-1">
           <span className="text-[15px] font-medium text-[#000000]">
-            ₹{resolvedPrice}
+            ${resolvedPrice}
           </span>
           {resolvedOldPrice && (
             <span className="text-[15px] text-gray-400 line-through ml-2">
-              ₹{resolvedOldPrice}
+              ${resolvedOldPrice}
             </span>
           )}
         </div>
@@ -63,7 +63,7 @@ const ProductCard = ({
           <div className="flex items-center gap-3">
             {data.oldPrice && (
               <span className="text-[16px] text-gray-400 line-through">
-                ₹{data.oldPrice}
+                ${data.oldPrice}
               </span>
             )}
             {data.discount && (
