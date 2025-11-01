@@ -7,7 +7,7 @@ const navItems = [
   { label: 'Wishlist', icon: AiOutlineHeart, route: '/wishlist' },
   { label: 'Cart', icon: AiOutlineShoppingCart, route: '/shopping-cart' },
   { label: 'Search', icon: AiOutlineSearch, route: '/search' },
-  { label: 'Setting', icon: AiOutlineSetting, route: '' },
+  { label: 'Setting', icon: AiOutlineSetting, route: '/settings' },
 ];
 
 const NavBar = () => {

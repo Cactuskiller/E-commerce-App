@@ -21,6 +21,17 @@ const WishlistPage = () => {
     });
   }, []);
 
+  // const handleRemoveItem = (pid) => {
+  //   const newWishlist = products.filter((item) => item.id !== pid);
+  //   setProducts(newWishlist);
+  //   localStorage.setItem("wishlist", JSON.stringify(newWishlist));
+  // };
+
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    localStorage.removeItem("wishlist");
+  };
+
   return (
     <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-[#F9F9F9]">
       {/* Header */}
@@ -66,6 +77,7 @@ const WishlistPage = () => {
           )}
         </div>
       )}
+    
     </div>
   );
 };

@@ -300,8 +300,6 @@ export default function Checkout() {
                   size={it.size}
                   qty={it.qty}
                 />
-
-                {/* 🗑️ Delete button */}
                 <button
                   onClick={(e) => {
                     e.stopPropagation(); // Prevent card click event

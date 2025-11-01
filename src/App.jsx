@@ -10,6 +10,7 @@ import ShoppingCart from "./pages/shopingCart";
 import ProductListPage from "./pages/ProductListPage";
 import WishlistPage from "./pages/WishlistPage";
 import SearchPage from "./pages/SearchPage";
+import SettingsPage from "./pages/SettingsPage";
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
         <Route path="/products/:type/:id" element={<ProductListPage />} />
         <Route path="/wishlist" element={<WishlistPage />} />
         <Route path="/search" element={<SearchPage />} />
+        <Route path="/settings" element={<SettingsPage />} />
       </Routes>
     </Router>
   );
