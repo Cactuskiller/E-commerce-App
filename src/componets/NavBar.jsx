@@ -4,9 +4,9 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 const navItems = [
   { label: 'Home', icon: AiOutlineHome, route: '/home' },
-  { label: 'Wishlist', icon: AiOutlineHeart, route: '' },
+  { label: 'Wishlist', icon: AiOutlineHeart, route: '/wishlist' },
   { label: 'Cart', icon: AiOutlineShoppingCart, route: '/shopping-cart' },
-  { label: 'Search', icon: AiOutlineSearch, route: '' },
+  { label: 'Search', icon: AiOutlineSearch, route: '/search' },
   { label: 'Setting', icon: AiOutlineSetting, route: '' },
 ];
 

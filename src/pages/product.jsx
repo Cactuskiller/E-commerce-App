@@ -84,6 +84,7 @@ export default function ProductPage() {
   const [selectedRating, setSelectedRating] = useState(0); // Rating selected by user
   const [submittingRating, setSubmittingRating] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState({});
+  const [isWishlisted, setIsWishlisted] = useState(false); // New state for wishlist
 
   // Load qty from localStorage on mount
   useEffect(() => {
@@ -288,6 +289,27 @@ export default function ProductPage() {
     }
   };
 
+  // Handle add to wishlist
+  const handleWishlist = () => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    if (isWishlisted) {
+      // Remove from wishlist
+      const updated = wishlist.filter(pid => pid !== product.id);
+      localStorage.setItem("wishlist", JSON.stringify(updated));
+      setIsWishlisted(false);
+    } else {
+      // Add to wishlist
+      wishlist.push(product.id);
+      localStorage.setItem("wishlist", JSON.stringify([...new Set(wishlist)]));
+      setIsWishlisted(true);
+    }
+  };
+
+  useEffect(() => {
+    const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
+    setIsWishlisted(wishlist.includes(product?.id));
+  }, [product?.id]);
+
   if (!product)
     return (
       <div className="flex items-center justify-center h-screen">
@@ -359,9 +381,37 @@ export default function ProductPage() {
           ))}
         </div>
 
-        <div className="mt-5">
+        <div className="flex items-center justify-between mt-5">
           <h1 className="text-xl font-bold text-[#2D2343]">{product.title}</h1>
+          <button
+            onClick={handleWishlist}
+            className="ml-2 transition-transform hover:scale-110"
+            aria-label="Add to wishlist"
+            style={{
+              boxShadow: "0 2px 8px rgba(248,55,88,0.15)",
+              borderRadius: "50%",
+              background: "#fff",
+              padding: "6px",
+              border: "none",
+              outline: "none",
+              cursor: "pointer",
+            }}
+          >
+            {isWishlisted ? (
+              // Filled heart
+              <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="#F83758">
+                <path d="M12.1 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54l-1.35 1.31z"/>
+              </svg>
+            ) : (
+              // Outline heart
+              <svg xmlns="http://www.w3.org/2000/svg" width="38" height="38" viewBox="0 0 24 24" fill="none" stroke="#F83758" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12.1 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41 0.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54l-1.35 1.31z"/>
+              </svg>
+            )}
+          </button>
+        </div>
 
+        <div className="mt-5">
           {/* Product Options (Colors & Sizes) under the title
           {(product.colors.length > 0 || product.sizes.length > 0) && (
             <div className="mt-2 mb-2">
@@ -401,7 +451,7 @@ export default function ProductPage() {
                 </div>
               )}
             </div>
-          )} */}
+          ) */}
 
           {/* Product Options (Additional) - new section */}
           {product.options && product.options.length > 0 && (
