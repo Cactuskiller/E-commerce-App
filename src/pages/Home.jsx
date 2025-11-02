@@ -9,7 +9,7 @@ import BannerCategory from "../componets/BannerCategory";
 import Header from "../componets/Header";
 import SearchBar from "../componets/SearchBar";
 import logoImg from "../assets/logo.png";
-import profileImg from "../assets/profile.png";
+import profileHeaderImg from "../assets/profile-image.jpg";
 import { URL } from "../utils/api";
 
 const Home = () => {
@@ -143,15 +143,38 @@ const Home = () => {
   return (
     <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-[#F9F9F9] pb-20">
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
-        <img src={logoImg} alt="Logo" className="h-8" />
+      <div className="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+        {/* Burger menu button */}
         <button
-          className="rounded-full overflow-hidden border-2 border-gray-300 w-10 h-10"
-          onClick={() => setShowLogoutModal(true)}
-          aria-label="Logout"
+          className="rounded-full bg-gray-100 w-10 h-10 flex items-center justify-center mr-2"
+          aria-label="Menu"
+          // Add your menu toggle logic here if needed
+        >
+          <svg
+            width="24"
+            height="24"
+            fill="none"
+            stroke="#222"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+          >
+            <line x1="5" y1="7" x2="19" y2="7" />
+            <line x1="5" y1="12" x2="19" y2="12" />
+            <line x1="5" y1="17" x2="19" y2="17" />
+          </svg>
+        </button>
+        {/* Logo and title */}
+        <div className="flex-1 flex items-center justify-center">
+          <img src={logoImg} alt="Logo" className="h-8 mr-2" />
+          
+        </div>
+        {/* Profile button */}
+        <button
+          className="rounded-full overflow-hidden w-10 h-10 ml-2"
+          aria-label="Profile"
         >
           <img
-            src={profileImg}
+            src={profileHeaderImg}
             alt="Profile"
             className="w-full h-full object-cover"
           />
@@ -163,9 +186,9 @@ const Home = () => {
       {/* Render banners from backend */}
       {Array.isArray(banners) &&
         banners
-          .filter(banner => Boolean(banner.active) && !Boolean(banner.hidden))
+          .filter((banner) => Boolean(banner.active) && !Boolean(banner.hidden))
           .map((banner, idx) => (
-            <div key={idx} className="w-[95%] mx-auto mt-6">
+            <div key={idx} className="w-[95%] mx-auto mt-3">
               {renderBanner(banner)}
             </div>
           ))}
