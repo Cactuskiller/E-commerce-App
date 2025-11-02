@@ -9,7 +9,7 @@ import BannerCategory from "../componets/BannerCategory";
 import Header from "../componets/Header";
 import SearchBar from "../componets/SearchBar";
 import logoImg from "../assets/logo.png";
-import profileHeaderImg from "../assets/profile-image.jpg";
+import profileHeaderImg from "../assets/avator3.webp";
 import { URL } from "../utils/api";
 
 const Home = () => {
@@ -141,12 +141,12 @@ const Home = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-[#F9F9F9] pb-20">
+    <div className="relative h-[100dvh] flex flex-col max-w-sm mx-auto bg-[#F9F9F9] pb-20">
       {/* Header */}
-      <div className="sticky top-0 z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
+      <div className="sticky top-0 w-full z-40 flex items-center justify-between px-4 py-3 bg-white border-b border-gray-200">
         {/* Burger menu button */}
         <button
-          className="rounded-full bg-gray-100 w-10 h-10 flex items-center justify-center mr-2"
+          className="rounded-full bg-gray-100 w-10 h-10 flex items-center justify-center"
           aria-label="Menu"
           // Add your menu toggle logic here if needed
         >
@@ -170,7 +170,7 @@ const Home = () => {
         </div>
         {/* Profile button */}
         <button
-          className="rounded-full overflow-hidden w-10 h-10 ml-2"
+          className="rounded-full overflow-hidden w-13 h-13 ml-2"
           aria-label="Profile"
         >
           <img

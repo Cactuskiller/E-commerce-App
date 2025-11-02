@@ -32,7 +32,7 @@ const Onboarding = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen bg-white px-4 py-6 max-w-sm mx-auto">
+    <div className="flex flex-col items-center justify-between h-[100dvh] bg-white px-4 py-6 max-w-sm mx-auto">
 
       {/* Onboarding Content */}
       <div className="flex-1 flex flex-col items-center justify-center w-full">

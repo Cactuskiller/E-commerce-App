@@ -27,7 +27,7 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-white p-6">
+    <div className="relative h-[100dvh] flex flex-col max-w-sm mx-auto bg-white p-6">
       {/* Header */}
       <div className="flex items-center mb-6">
         <button

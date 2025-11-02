@@ -158,7 +158,7 @@ export default function Checkout() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-white pb-28">
+    <div className="relative h-[100dvh] flex flex-col max-w-sm mx-auto bg-white pb-28">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur border-b border-gray-200 pb-3">
         <div className="w-[95%] mx-auto h-12 flex items-center justify-center relative">

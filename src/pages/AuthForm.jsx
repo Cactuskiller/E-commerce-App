@@ -148,7 +148,7 @@ const AuthForm = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white px-4 py-6 max-w-sm mx-auto">
+    <div className="h-[100dvh] flex flex-col bg-white px-4 py-6 max-w-sm mx-auto">
       <div className="w-full mt-6 flex flex-col flex-1">
         <h1 className="text-4xl font-bold mb-8">
           {mode === "login" ? "Welcome Back!" : "Create an account"}

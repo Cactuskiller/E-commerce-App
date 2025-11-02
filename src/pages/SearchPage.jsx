@@ -28,8 +28,9 @@ const SearchPage = () => {
   );
 
   return (
-    <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-[#F9F9F9]">
-      <div className="flex flex-col p-4">
+    <div className="relative h-[100dvh] flex flex-col max-w-sm mx-auto bg-[#F9F9F9]">
+      {/* Sticky Header */}
+      <div className="sticky top-0 z-40 bg-[#F9F9F9] flex flex-col p-4">
         <div className="flex items-center mb-5 relative">
           <button
             onClick={() => navigate("/home")}

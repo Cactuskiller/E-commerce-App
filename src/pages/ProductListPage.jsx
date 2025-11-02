@@ -62,7 +62,7 @@ const ProductListPage = () => {
   }, [type, id]);
 
   return (
-    <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-[#F9F9F9]">
+    <div className="relative h-[100dvh] flex flex-col max-w-sm mx-auto bg-[#F9F9F9]">
       {/* Header */}
       <div className="flex items-center relative p-4">
         <button

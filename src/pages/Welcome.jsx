@@ -6,7 +6,7 @@ const Welcome = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="relative min-h-screen flex flex-col justify-end max-w-sm mx-auto">
+    <div className="relative h-[100dvh] flex flex-col justify-end max-w-sm mx-auto">
       <div className="relative z-20">
       </div>
       <img

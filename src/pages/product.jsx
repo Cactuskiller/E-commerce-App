@@ -323,7 +323,7 @@ export default function ProductPage() {
   };
 
   return (
-    <div className="relative min-h-screen flex flex-col max-w-sm mx-auto bg-white pb-24 pt-5">
+    <div className="relative h-[100dvh] flex flex-col max-w-sm mx-auto bg-white pb-24 pt-5">
       {/* Header */}
       <div className="sticky top-0 z-40 bg-white/90 backdrop-blur">
         <div className="w-[95%] mx-auto h-12 flex items-center justify-between">

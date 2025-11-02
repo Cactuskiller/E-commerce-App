@@ -83,7 +83,7 @@ export default function ShoppingCart() {
   }, [showPaymentSuccess, navigate]);
 
   return (
-    <div className="min-h-screen bg-[#FDFDFD] flex flex-col">
+    <div className="h-[100dvh] bg-[#FDFDFD] flex flex-col">
       {/* Payment Success Popup */}
       {showPaymentSuccess && (
         <div className="fixed inset-0 bg-gray bg-opacity-20 backdrop-blur-sm flex items-center justify-center z-50">

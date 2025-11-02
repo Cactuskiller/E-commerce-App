@@ -21,7 +21,7 @@ const BannerCategory = ({ type, data, onCategorySelect }) => {
     "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23f3f4f6'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' fill='%23374151' font-size='10' font-family='Arial, sans-serif'%3ECategory%3C/text%3E%3C/svg%3E";
 
   return (
-    <div className="flex justify-between items-center w-full mx-auto mt-6 mb-2 gap-2 overflow-x-auto no-scrollbar">
+    <div className="flex justify-between items-center w-full mx-auto mt-6 mb-2 gap-2 overflow-x-auto no-scrollbar ">
       {sortedCategoryItems.map((cat, index) => {
         // Handle category name
         const name = cat.name || `Category ${index + 1}`;
