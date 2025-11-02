@@ -11,6 +11,7 @@ import SearchBar from "../componets/SearchBar";
 import logoImg from "../assets/logo.png";
 import profileHeaderImg from "../assets/avator3.webp";
 import { URL } from "../utils/api";
+import SkeletonHome from "../componets/SkeletonHome";
 
 const Home = () => {
   const [banners, setBanners] = useState([]);
@@ -181,73 +182,78 @@ const Home = () => {
         </button>
       </div>
 
-      <SearchBar />
-
-      {/* Render banners from backend */}
-      {Array.isArray(banners) &&
-        banners
-          .filter((banner) => Boolean(banner.active) && !Boolean(banner.hidden))
-          .map((banner, idx) => (
-            <div key={idx} className="w-[95%] mx-auto mt-3">
-              {renderBanner(banner)}
-            </div>
-          ))}
-
-      {/* Display filtered products when a category is selected */}
-      {selectedCategory && products.length > 0 && (
-        <div className="w-[95%] mx-auto mt-6 mb-6">
-          <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-bold text-[#2D2343]">
-              Category Products
-            </h2>
-            <button
-              onClick={() => {
-                setSelectedCategory(null);
-                setProducts([]);
-              }}
-              className="text-sm text-gray-500 underline"
-            >
-              Clear Filter
-            </button>
-          </div>
-          <div className="grid grid-cols-2 gap-3">
-            {products.map((product) => (
-              <div
-                key={product.id}
-                className="cursor-pointer"
-                onClick={() => navigate(`/product/${product.id}`)}
-              >
-                <div className="bg-white rounded-lg p-3 shadow-sm">
-                  <img
-                    src={
-                      product.primary_image ||
-                      product.image ||
-                      "https://via.placeholder.com/150"
-                    }
-                    alt={product.name}
-                    className="w-full h-32 object-cover rounded-md mb-2"
-                  />
-                  <h3 className="font-semibold text-sm truncate">
-                    {product.name}
-                  </h3>
-                  <p className="text-gray-600 text-xs truncate">
-                    {product.description}
-                  </p>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className="text-lg font-bold text-[#F83758]">
-                      ${product.endprice || product.price}
-                    </span>
-                    {product.price !== product.endprice && (
-                      <span className="text-sm text-gray-500 line-through">
-                        ${product.price}
-                      </span>
-                    )}
-                  </div>
+      {loading ? (
+        <SkeletonHome />
+      ) : (
+        <>
+          <SearchBar />
+          {/* Render banners from backend */}
+          {Array.isArray(banners) &&
+            banners
+              .filter((banner) => Boolean(banner.active) && !Boolean(banner.hidden))
+              .map((banner, idx) => (
+                <div key={idx} className="w-[95%] mx-auto mt-3">
+                  {renderBanner(banner)}
                 </div>
+              ))}
+
+          {/* Display filtered products when a category is selected */}
+          {selectedCategory && products.length > 0 && (
+            <div className="w-[95%] mx-auto mt-6 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-bold text-[#2D2343]">
+                  Category Products
+                </h2>
+                <button
+                  onClick={() => {
+                    setSelectedCategory(null);
+                    setProducts([]);
+                  }}
+                  className="text-sm text-gray-500 underline"
+                >
+                  Clear Filter
+                </button>
               </div>
-            ))}
-          </div>
-        </div>
+              <div className="grid grid-cols-2 gap-3">
+                {products.map((product) => (
+                  <div
+                    key={product.id}
+                    className="cursor-pointer"
+                    onClick={() => navigate(`/product/${product.id}`)}
+                  >
+                    <div className="bg-white rounded-lg p-3 shadow-sm">
+                      <img
+                        src={
+                          product.primary_image ||
+                          product.image ||
+                          "https://via.placeholder.com/150"
+                        }
+                        alt={product.name}
+                        className="w-full h-32 object-cover rounded-md mb-2"
+                      />
+                      <h3 className="font-semibold text-sm truncate">
+                        {product.name}
+                      </h3>
+                      <p className="text-gray-600 text-xs truncate">
+                        {product.description}
+                      </p>
+                      <div className="flex justify-between items-center mt-2">
+                        <span className="text-lg font-bold text-[#F83758]">
+                          ${product.endprice || product.price}
+                        </span>
+                        {product.price !== product.endprice && (
+                          <span className="text-sm text-gray-500 line-through">
+                            ${product.price}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+        </>
       )}
 
       <NavBar />

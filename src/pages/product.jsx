@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { URL } from "../utils/api";
 import { BannerList } from "../componets/BannerList";
 import Button from "../componets/button";
+import SkeletonProductCard from "../componets/SkeletonProductCard";
 
 const Dot = ({ active }) => (
   <span
@@ -135,6 +136,7 @@ export default function ProductPage() {
   useEffect(() => {
     const fetchProduct = async () => {
       try {
+        // await new Promise((res) => setTimeout(res, 800)); // 800ms delay
         const res = await fetch(`${URL}/products/${id}/with-primary-image`);
         if (!res.ok) throw new Error("Failed to fetch product");
         const data = await res.json();
@@ -294,7 +296,7 @@ export default function ProductPage() {
     const wishlist = JSON.parse(localStorage.getItem("wishlist") || "[]");
     if (isWishlisted) {
       // Remove from wishlist
-      const updated = wishlist.filter(pid => pid !== product.id);
+      const updated = wishlist.filter((pid) => pid !== product.id);
       localStorage.setItem("wishlist", JSON.stringify(updated));
       setIsWishlisted(false);
     } else {
@@ -312,8 +314,8 @@ export default function ProductPage() {
 
   if (!product)
     return (
-      <div className="flex items-center justify-center h-screen">
-        <p>Loading product...</p>
+      <div className="flex items-center justify-center h-screen bg-white">
+        <SkeletonProductCard />
       </div>
     );
 
@@ -412,47 +414,6 @@ export default function ProductPage() {
         </div>
 
         <div className="mt-5">
-          {/* Product Options (Colors & Sizes) under the title
-          {(product.colors.length > 0 || product.sizes.length > 0) && (
-            <div className="mt-2 mb-2">
-              {product.colors.length > 0 && (
-                <div className="mb-1">
-                  <span className="font-semibold text-sm text-[#2D2343] mr-2">
-                    Colors:
-                  </span>
-                  {product.colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setActiveColor(color)}
-                      className={`px-3 py-1 rounded-full border-2 mr-2 mb-1 text-sm transition ${
-                        activeColor === color
-                          ? "bg-[#FE6B8B] text-white border-[#FE6B8B]"
-                          : "bg-white text-[#FE6B8B] border-[#FE6B8B]"
-                      }`}
-                    >
-                      {color.trim()}
-                    </button>
-                  ))}
-                </div>
-              )}
-              {product.sizes.length > 0 && (
-                <div>
-                  <span className="font-semibold text-sm text-[#2D2343] mr-2">
-                    Sizes:
-                  </span>
-                  {product.sizes.map((size) => (
-                    <SizePill
-                      key={size}
-                      label={size}
-                      active={activeSize === size}
-                      onClick={() => setActiveSize(size)}
-                    />
-                  ))}
-                </div>
-              )}
-            </div>
-          ) */}
-
           {/* Product Options (Additional) - new section */}
           {product.options && product.options.length > 0 && (
             <div className="mt-3 mb-3">

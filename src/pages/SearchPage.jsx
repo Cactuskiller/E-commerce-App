@@ -3,6 +3,19 @@ import { useNavigate } from "react-router-dom";
 import { URL } from "../utils/api";
 import { BannerList } from "../componets/BannerList";
 
+// Skeleton card for loading effect
+const SkeletonCard = () => (
+  <div className="bg-white rounded-lg p-3 shadow-sm animate-pulse">
+    <div className="w-full h-32 bg-gray-200 rounded-md mb-2" />
+    <div className="h-4 bg-gray-200 rounded mb-2 w-3/4" />
+    <div className="h-3 bg-gray-200 rounded mb-1 w-2/3" />
+    <div className="flex justify-between items-center mt-2">
+      <div className="h-4 bg-gray-200 rounded w-16" />
+      <div className="h-3 bg-gray-200 rounded w-10" />
+    </div>
+  </div>
+);
+
 const SearchPage = () => {
   const navigate = useNavigate();
   const [products, setProducts] = useState([]);
@@ -28,7 +41,7 @@ const SearchPage = () => {
   );
 
   return (
-    <div className="relative h-[100dvh] flex flex-col max-w-sm mx-auto bg-[#F9F9F9]">
+    <div className="relative flex flex-col max-w-sm mx-auto bg-[#F9F9F9]">
       {/* Sticky Header */}
       <div className="sticky top-0 z-40 bg-[#F9F9F9] flex flex-col p-4">
         <div className="flex items-center mb-5 relative">
@@ -74,11 +87,13 @@ const SearchPage = () => {
         </div>
       </div>
 
-      {/* Product list */}
+      {/* Product list or skeletons */}
       <div className="w-[95%] mx-auto mt-2">
         {loading ? (
-          <div className="flex items-center justify-center h-40 text-gray-600">
-            Loading products...
+          <div className="grid grid-cols-2 gap-3">
+            {[...Array(8)].map((_, idx) => (
+              <SkeletonCard key={idx} />
+            ))}
           </div>
         ) : filteredProducts.length > 0 ? (
           <BannerList

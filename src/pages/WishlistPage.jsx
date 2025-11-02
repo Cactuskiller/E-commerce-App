@@ -58,8 +58,20 @@ const WishlistPage = () => {
 
       {/* Loading or Wishlist list */}
       {loading ? (
-        <div className="flex items-center justify-center h-40 text-gray-600">
-          Loading wishlist...
+        <div className="w-[95%] mx-auto mt-6 grid grid-cols-2 gap-3">
+          {[...Array(8)].map((_, idx) => (
+            <div
+              key={idx}
+              className="bg-white rounded-xl shadow-sm animate-pulse"
+              style={{ height: "260px", display: "flex", flexDirection: "column" }}
+            >
+              <div className="w-full h-[150px] bg-gray-200 rounded-t-xl" />
+              <div className="px-3 pt-2 flex-1 flex flex-col justify-center">
+                <div className="h-4 bg-gray-200 rounded mb-2 w-3/4" />
+                <div className="h-3 bg-gray-200 rounded mb-1 w-2/3" />
+              </div>
+            </div>
+          ))}
         </div>
       ) : (
         <div className="w-[95%] mx-auto mt-6">
