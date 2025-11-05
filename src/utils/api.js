@@ -1,1 +1,1 @@
-export const URL = "http://danya.puretik.info/api";
+export const URL = "https://danya.puretik.info/api";
