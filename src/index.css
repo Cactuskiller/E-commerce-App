@@ -1,6 +1,5 @@
 @import "tailwindcss";
 
-
 body {
   font-family: 'Montserrat', sans-serif;
 }
@@ -23,4 +22,79 @@ body {
 .scrollbar-hide {
   -ms-overflow-style: none;
   scrollbar-width: none;
+}
+
+/* WebView optimizations */
+@media screen and (max-width: 768px) {
+  /* Navigation bar - force center layout */
+  nav, .navbar, header, [class*="nav"], [class*="header"] {
+    display: grid !important;
+    grid-template-columns: 1fr auto 1fr !important;
+    align-items: center !important;
+    width: 100% !important;
+    padding: 15px 20px !important;
+    box-sizing: border-box !important;
+    margin: 0 !important;
+  }
+  
+  /* Left side items (hamburger menu) */
+  nav > :first-child, .navbar > :first-child {
+    justify-self: start !important;
+  }
+  
+  /* Center logo/brand specifically */
+  .logo, .brand, nav img, nav h1, nav h2, [class*="logo"], [class*="brand"] {
+    justify-self: center !important;
+    margin: 0 !important;
+    text-align: center !important;
+    grid-column: 2 !important;
+  }
+  
+  /* Right side items (profile/avatar) */
+  nav > :last-child, .navbar > :last-child {
+    justify-self: end !important;
+  }
+  
+  /* Force equal spacing for navbar items */
+  nav > *, .navbar > * {
+    width: auto !important;
+    max-width: none !important;
+  }
+  
+  /* Remove product card borders */
+  .product-card, .card, [class*="card"] {
+    border: none !important;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1) !important;
+    border-radius: 12px !important;
+  }
+  
+  /* Remove icon borders */
+  svg, .icon, i {
+    border: none !important;
+    outline: none !important;
+  }
+  
+  /* Ensure full width */
+  html, body {
+    width: 100% !important;
+    overflow-x: hidden !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  
+  /* Additional navbar centering fix */
+  .navbar-container, [class*="navbar-container"] {
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 auto !important;
+    padding: 0 !important;
+  }
+  
+  /* Force center alignment for Stylish logo specifically */
+  [class*="stylish"], [alt*="stylish"], [class*="logo"] img {
+    position: absolute !important;
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    margin: 0 !important;
+  }
 }
