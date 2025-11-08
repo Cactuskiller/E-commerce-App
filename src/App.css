@@ -78,3 +78,190 @@
   h3 { font-size: 18px; }
   p { font-size: 16px; }
 }
+
+.onboarding-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  min-height: 100vh;
+  padding: 20px;
+  box-sizing: border-box;
+}
+
+.onboarding-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  max-width: 100%;
+}
+
+.onboarding-image {
+  width: 280px !important;
+  height: 280px !important;
+  object-fit: contain;
+  margin: 0 auto 20px auto;
+  display: block;
+}
+
+.onboarding-buttons {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  padding: 20px 0;
+  margin-top: auto;
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  right: 20px;
+  background: white;
+  z-index: 100;
+}
+
+.onboarding-title {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 20px 0 10px 0;
+  text-align: center;
+}
+
+.onboarding-description {
+  font-size: 16px;
+  color: #666;
+  line-height: 1.5;
+  margin: 0;
+  text-align: center;
+  max-width: 300px;
+}
+
+.navbar-container {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  box-sizing: border-box;
+}
+
+.navbar {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: white;
+  border-bottom: 1px solid #e5e5e5;
+  box-sizing: border-box;
+  margin: 0;
+}
+
+.navbar-left {
+  flex: 1;
+  display: flex;
+  align-items: center;
+}
+
+.navbar-center {
+  flex: 2;
+  display: flex;
+  justify-content: center;
+}
+
+.navbar-right {
+  flex: 1;
+  display: flex;
+  justify-content: flex-end;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Remove any container padding that might cause spacing */
+.app-container {
+  padding: 0 !important;
+  margin: 0 !important;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.product-card,
+.product-item,
+.card,
+.jeans-card {
+  border: none !important;
+  outline: none !important;
+  box-shadow: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Target any default styling that might add borders */
+.product-card img,
+.product-item img,
+.jeans-card img {
+  border: none !important;
+  outline: none !important;
+}
+
+/* Remove borders from containers */
+.product-grid,
+.jeans-collection {
+  gap: 16px;
+}
+
+.product-grid > *,
+.jeans-collection > * {
+  border: none !important;
+  box-shadow: none !important;
+}
+
+/* Specifically for the jeans collection cards */
+.jeans-item {
+  border: none !important;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f8f8;
+  box-shadow: none !important;
+}
+
+/* Global fixes for Flutter WebView */
+* {
+  box-sizing: border-box !important;
+  -webkit-tap-highlight-color: transparent !important;
+}
+
+html, body {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: 100% !important;
+  overflow-x: hidden !important;
+}
+
+#root {
+  width: 100% !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* Remove default WebView borders and outlines */
+img, button, input, textarea, select {
+  border: none !important;
+  outline: none !important;
+  -webkit-appearance: none !important;
+  -moz-appearance: none !important;
+  appearance: none !important;
+}
+
+/* Ensure full width containers */
+.container,
+.main-container,
+.app-wrapper {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 0 !important;
+  padding: 0 16px !important;
+  box-sizing: border-box !important;
+}
